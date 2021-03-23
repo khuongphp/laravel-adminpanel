@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response as IlluminateResponse;
-use Response;
 
 /**
  * Base API Controller.
@@ -67,11 +66,11 @@ class APIController extends Controller
     {
         $data = array_merge($data, [
             'paginator' => [
-                'total_count'  => $items->total(),
-                'total_pages'  => ceil($items->total() / $items->perPage()),
+                'total_count' => $items->total(),
+                'total_pages' => ceil($items->total() / $items->perPage()),
                 'current_page' => $items->currentPage(),
-                'limit'        => $items->perPage(),
-             ],
+                'limit' => $items->perPage(),
+            ],
         ]);
 
         return $this->respond($data);
@@ -113,11 +112,11 @@ class APIController extends Controller
     public function respondWithError($message)
     {
         return $this->respond([
-                'error' => [
-                    'message'     => $message,
-                    'status_code' => $this->getStatusCode(),
-                ],
-            ]);
+            'error' => [
+                'message' => $message,
+                'status_code' => $this->getStatusCode(),
+            ],
+        ]);
     }
 
     /**

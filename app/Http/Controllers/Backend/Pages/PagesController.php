@@ -12,22 +12,24 @@ use App\Http\Requests\Backend\Pages\UpdatePageRequest;
 use App\Http\Responses\Backend\Page\EditResponse;
 use App\Http\Responses\RedirectResponse;
 use App\Http\Responses\ViewResponse;
-use App\Models\Page\Page;
-use App\Repositories\Backend\Pages\PagesRepository;
+use App\Models\Page;
+use App\Repositories\Backend\PagesRepository;
+use Illuminate\Support\Facades\View;
 
-/**
- * Class PagesController.
- */
 class PagesController extends Controller
 {
-    protected $pages;
+    /**
+     * @var \App\Repositories\Backend\PagesRepository
+     */
+    protected $repository;
 
     /**
-     * @param \App\Repositories\Backend\Pages\PagesRepository $pages
+     * @param \App\Repositories\Backend\PagesRepository $repository
      */
-    public function __construct(PagesRepository $pages)
+    public function __construct(PagesRepository $repository)
     {
-        $this->pages = $pages;
+        $this->repository = $repository;
+        View::share('js', ['pages']);
     }
 
     /**
@@ -57,16 +59,16 @@ class PagesController extends Controller
      */
     public function store(StorePageRequest $request)
     {
-        $this->pages->create($request->except(['_token']));
+        $this->repository->create($request->except(['_token', '_method']));
 
-        return new RedirectResponse(route('admin.pages.index'), ['flash_success' => trans('alerts.backend.pages.created')]);
+        return new RedirectResponse(route('admin.pages.index'), ['flash_success' => __('alerts.backend.pages.created')]);
     }
 
     /**
-     * @param \App\Models\Page\Page                            $page
+     * @param \App\Models\Page $page
      * @param \App\Http\Requests\Backend\Pages\EditPageRequest $request
      *
-     * @return \App\Http\Responses\Backend\Page\EditResponse
+     * @return \App\Http\Responses\Backend\Blog\EditResponse
      */
     public function edit(Page $page, EditPageRequest $request)
     {
@@ -74,28 +76,28 @@ class PagesController extends Controller
     }
 
     /**
-     * @param \App\Models\Page\Page                              $page
+     * @param \App\Models\Page $page
      * @param \App\Http\Requests\Backend\Pages\UpdatePageRequest $request
      *
      * @return \App\Http\Responses\RedirectResponse
      */
     public function update(Page $page, UpdatePageRequest $request)
     {
-        $this->pages->update($page, $request->except(['_method', '_token']));
+        $this->repository->update($page, $request->except(['_token', '_method']));
 
-        return new RedirectResponse(route('admin.pages.index'), ['flash_success' => trans('alerts.backend.pages.updated')]);
+        return new RedirectResponse(route('admin.pages.index'), ['flash_success' => __('alerts.backend.pages.updated')]);
     }
 
     /**
-     * @param \App\Models\Page\Page                              $page
+     * @param \App\Models\Page $page
      * @param \App\Http\Requests\Backend\Pages\DeletePageRequest $request
      *
      * @return \App\Http\Responses\RedirectResponse
      */
     public function destroy(Page $page, DeletePageRequest $request)
     {
-        $this->pages->delete($page);
+        $this->repository->delete($page);
 
-        return new RedirectResponse(route('admin.pages.index'), ['flash_success' => trans('alerts.backend.pages.deleted')]);
+        return new RedirectResponse(route('admin.pages.index'), ['flash_success' => __('alerts.backend.pages.deleted')]);
     }
 }
